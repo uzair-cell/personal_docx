@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOCUMENT VAULT // CYBERPUNK DASHBOARD</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ===== ROOT VARIABLES ===== */
+        :root {
+            --bg-deep: #06060d;
+            --bg-panel: #0c0c1a;
+            --bg-card: #111128;
+            --neon-cyan: #00f0ff;
+            --neon-purple: #b400ff;
+            --neon-pink: #ff0088;
+            --neon-green: #00ff88;
+            --neon-amber: #ffaa00;
+            --text-primary: #e0e0f0;
+            --text-secondary: #9090b0;
+            --border-glow: rgba(0, 240, 255, 0.3);
+            --glass-bg: rgba(14, 14, 30, 0.75);
+            --card-radius: 16px;
+            --transition-speed: 0.3s;
+        }
+
+        /* ===== RESET & BODY ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+        }
+
+        /* Scanline overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.03) 2px,
+                    rgba(0, 0, 0, 0.03) 4px);
+            opacity: 0.5;
+        }
+
+        /* ===== GLOW ORBS ===== */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+            animation: floatOrb 12s ease-in-out infinite;
+        }
+        .glow-orb.orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 240, 255, 0.06);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+        .glow-orb.orb-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(180, 0, 255, 0.05);
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -5s;
+        }
+        .glow-orb.orb-3 {
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 0, 136, 0.04);
+            top: 40%;
+            left: 50%;
+            animation-delay: -8s;
+        }
+
+        @keyframes floatOrb {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(40px, -30px) scale(1.15);
+            }
+            50% {
+                transform: translate(-20px, 25px) scale(0.9);
+            }
+            75% {
+                transform: translate(-35px, -15px) scale(1.1);
+            }
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            background: var(--bg-panel);
+            border-right: 1px solid rgba(0, 240, 255, 0.15);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+            box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        .sidebar-logo {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: center;
+        }
+        .sidebar-logo .logo-icon {
+            font-size: 42px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .sidebar-logo h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .sidebar-logo .tagline {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            transition: all var(--transition-speed);
+            cursor: pointer;
+            position: relative;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(0, 240, 255, 0.08);
+            color: var(--neon-cyan);
+            box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.25);
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+        .sidebar-nav a .nav-icon {
+            font-size: 1.3rem;
+            width: 28px;
+            text-align: center;
+        }
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 24px 32px;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .dashboard-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.5);
+        }
+        .search-container {
+            position: relative;
+        }
+        .search-container input {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 12px 18px 12px 44px;
+            border-radius: 30px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            width: 280px;
+            letter-spacing: 1px;
+            transition: all var(--transition-speed);
+            outline: none;
+        }
+        .search-container input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.2), 0 0 0 3px rgba(0, 240, 255, 0.05);
+            width: 320px;
+        }
+        .search-container .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            pointer-events: none;
+            color: var(--text-secondary);
+        }
+        .search-container input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+        }
+
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            flex: 1;
+            min-width: 140px;
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--card-radius);
+            padding: 18px 20px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-speed);
+        }
+        .stat-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 8px 32px rgba(0, 240, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        .stat-card .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--neon-cyan), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(0, 240, 255, 0.04);
+            pointer-events: none;
+        }
+
+        /* ===== SECTION TITLE ===== */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ===== DOCUMENT GRID ===== */
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        /* ===== DOCUMENT CARD ===== */
+        .doc-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+        .doc-card:hover {
+            border-color: rgba(0, 240, 255, 0.35);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 240, 255, 0.1);
+            transform: translateY(-4px);
+        }
+        .doc-card .card-preview {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a18;
+        }
+        .doc-card .card-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .doc-card .card-preview .img-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.4);
+            width: 100%;
+            height: 100%;
+            background: #0a0a18;
+        }
+        .doc-card .card-info {
+            padding: 14px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .doc-card .card-info h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .doc-card .card-info .card-category {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+        .doc-card .card-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .badge-cert {
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+        .badge-dmc {
+            background: rgba(0, 255, 136, 0.12);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        .badge-id {
+            background: rgba(255, 0, 136, 0.12);
+            color: var(--neon-pink);
+            border: 1px solid rgba(255, 0, 136, 0.3);
+        }
+        .badge-flip {
+            background: rgba(180, 0, 255, 0.12);
+            color: var(--neon-purple);
+            border: 1px solid rgba(180, 0, 255, 0.3);
+            animation: pulseBadge 2s ease-in-out infinite;
+        }
+        @keyframes pulseBadge {
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(180, 0, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(180, 0, 255, 0.6);
+            }
+        }
+
+        /* ===== FLIP CARD 3D ===== */
+        .flip-card-container {
+            perspective: 1200px;
+            width: 100%;
+            height: 200px;
+            background: #0a0a18;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flip-card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a18;
+        }
+        .flip-card-front {
+            z-index: 2;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+        .flip-card-front img,
+        .flip-card-back img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .flip-card-front .img-fallback,
+        .flip-card-back .img-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 2.8rem;
+            color: rgba(255, 255, 255, 0.35);
+            width: 100%;
+            height: 100%;
+            background: #0a0a18;
+            text-align: center;
+            padding: 10px;
+        }
+        .flip-card-front .img-fallback small,
+        .flip-card-back .img-fallback small {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.25);
+            word-break: break-all;
+            max-width: 90%;
+        }
+        /* Flip indicator dots */
+        .flip-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .flip-indicator .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .flip-indicator .dot.active {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 14px var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+
+        /* ===== MODAL / FULL-SCREEN VIEWER ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            backdrop-filter: blur(8px);
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-content {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 750px;
+            width: 90%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 80px rgba(0, 240, 255, 0.08);
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .modal-close:hover {
+            background: rgba(255, 0, 80, 0.3);
+            color: #ff4060;
+            box-shadow: 0 0 20px rgba(255, 0, 80, 0.4);
+        }
+        .modal-image-area {
+            width: 100%;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+        .modal-image-area img {
+            max-width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+        }
+        .modal-image-area .img-fallback {
+            font-size: 4.5rem;
+            color: rgba(255, 255, 255, 0.25);
+            text-align: center;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modal-image-area .img-fallback small {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.2);
+            word-break: break-all;
+        }
+        .modal-flip-btn {
+            margin-top: 14px;
+            padding: 10px 28px;
+            background: rgba(180, 0, 255, 0.2);
+            border: 1px solid rgba(180, 0, 255, 0.4);
+            color: #fff;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            display: none;
+        }
+        .modal-flip-btn.visible {
+            display: inline-block;
+        }
+        .modal-flip-btn:hover {
+            background: rgba(180, 0, 255, 0.35);
+            box-shadow: 0 0 25px rgba(180, 0, 255, 0.4);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                min-width: 70px;
+            }
+            .sidebar-logo h2,
+            .sidebar-logo .tagline,
+            .sidebar-nav a span,
+            .sidebar-footer {
+                display: none;
+            }
+            .sidebar-nav a {
+                justify-content: center;
+                padding: 14px;
+            }
+            .sidebar-nav a .nav-icon {
+                font-size: 1.5rem;
+                margin: 0;
+            }
+            .main-content {
+                padding: 16px;
+            }
+            .doc-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+            .doc-card .card-preview {
+                height: 150px;
+            }
+            .flip-card-container {
+                height: 150px;
+            }
+            .dashboard-header h1 {
+                font-size: 1.2rem;
+            }
+            .search-container input {
+                width: 180px;
+            }
+            .search-container input:focus {
+                width: 200px;
+            }
+            .stats-row {
+                gap: 8px;
+            }
+            .stat-card {
+                padding: 12px 14px;
+            }
+            .stat-card .stat-value {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">🔐</span>
+            <h2>DOC VAULT</h2>
+            <p class="tagline">Secure Archive</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="active" data-filter="all" onclick="filterDocs('all', this)">
+                <span class="nav-icon">📊</span> <span>Dashboard</span>
+            </a>
+            <a data-filter="certificate" onclick="filterDocs('certificate', this)">
+                <span class="nav-icon">📜</span> <span>Certificates</span>
+            </a>
+            <a data-filter="dmc" onclick="filterDocs('dmc', this)">
+                <span class="nav-icon">📋</span> <span>DMC Records</span>
+            </a>
+            <a data-filter="identity" onclick="filterDocs('identity', this)">
+                <span class="nav-icon">🪪</span> <span>Identity Docs</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">🔒 ENCRYPTED VAULT v2.0</div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+
+        <div class="dashboard-header">
+            <h1>📁 DOCUMENT ARCHIVE</h1>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search documents..." oninput="handleSearch()" />
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">8</div>
+                <div class="stat-label">Total Documents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statCert">3</div>
+                <div class="stat-label">Certificates</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statDmc">3</div>
+                <div class="stat-label">DMC Records</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statIdentity">2</div>
+                <div class="stat-label">Identity Docs</div>
+            </div>
+        </div>
+
+        <p class="section-title">📄 All Documents</p>
+        <div class="doc-grid" id="docGrid"></div>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-image-area" id="modalImageArea">
+                <div class="img-fallback">📄<small>Document preview</small></div>
+            </div>
+            <button class="modal-flip-btn" id="modalFlipBtn" onclick="flipInModal()">🔄 FLIP DOCUMENT</button>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  📁  DOCUMENT DATA  —  UPDATED CASE-SENSITIVE PATHS
+        // ================================================================
+        const documents = [{
+            id: 'matric-provisional',
+            name: 'Provisional Certificate',
+            subName: 'Matric / 10th Class',
+            category: 'certificate',
+            type: 'regular',
+            frontImage: 'images/10 class provisional.jpg',
+            backImage: null,
+            accentColor: '#00f0ff',
+            icon: '🎓',
+            badgeText: 'Certificate',
+            badgeClass: 'badge-cert'
+        }, {
+            id: 'inter-provisional',
+            name: 'Provisional Certificate',
+            subName: '12th Class / Intermediate',
+            category: 'certificate',
+            type: 'regular',
+            frontImage: 'images/12 class provisional .jpg',
+            backImage: null,
+            accentColor: '#00f0ff',
+            icon: '🎓',
+            badgeText: 'Certificate',
+            badgeClass: 'badge-cert'
+        }, {
+            id: 'matric-dmc',
+            name: 'DMC — Detailed Marks',
+            subName: 'Matric / 10th Class',
+            category: 'dmc',
+            type: 'regular',
+            frontImage: 'images/10 class dmc_1.jpg',
+            backImage: null,
+            accentColor: '#00ff88',
+            icon: '📋',
+            badgeText: 'DMC',
+            badgeClass: 'badge-dmc'
+        }, {
+            id: 'birth-certificate',
+            name: 'Birth Certificate',
+            subName: 'Official Record',
+            category: 'certificate',
+            type: 'regular',
+            frontImage: 'images/birth certificate _1.jpg',
+            backImage: null,
+            accentColor: '#00f0ff',
+            icon: '👶',
+            badgeText: 'Certificate',
+            badgeClass: 'badge-cert'
+        }, {
+            id: '11th-dmc',
+            name: 'DMC — Detailed Marks',
+            subName: '11th Class / First Year',
+            category: 'dmc',
+            type: 'regular',
+            frontImage: 'images/11 class dmc_1.jpg',
+            backImage: null,
+            accentColor: '#00ff88',
+            icon: '📋',
+            badgeText: 'DMC',
+            badgeClass: 'badge-dmc'
+        }, {
+            id: '12th-dmc',
+            name: 'DMC — Detailed Marks',
+            subName: '12th Class / Second Year',
+            category: 'dmc',
+            type: 'regular',
+            frontImage: 'images/12 class dmc_1.jpg',
+            backImage: null,
+            accentColor: '#00ff88',
+            icon: '📋',
+            badgeText: 'DMC',
+            badgeClass: 'badge-dmc'
+        }, {
+            id: 'domicile',
+            name: 'Domicile Certificate',
+            subName: 'Front & Back — Double-Click to Flip',
+            category: 'identity',
+            type: 'flip',
+            frontImage: 'images/Domicile Certificate front_1.jpg',
+            backImage: 'images/domicile Certificate back_1.jpg',
+            accentColor: '#b400ff',
+            icon: '🏠',
+            badgeText: 'FLIP ▶',
+            badgeClass: 'badge-flip'
+        }, {
+            id: 'id-card',
+            name: 'National ID Card',
+            subName: 'Front & Back — Double-Click to Flip',
+            category: 'identity',
+            type: 'flip',
+            frontImage: 'images/card front _1.jpg',
+            backImage: 'images/card back_1.jpg',
+            accentColor: '#ff0088',
+            icon: '🪪',
+            badgeText: 'FLIP ▶',
+            badgeClass: 'badge-flip'
+        }];
+
+        // Track flip state per document
+        const flipState = {};
+        documents.forEach(doc => { if (doc.type === 'flip') flipState[doc.id] = false; });
+
+        let currentModalDoc = null;
+        let modalShowingBack = false;
+
+        // ================================================================
+        //  BUILD IMAGE HTML WITH FALLBACK (FIXED DOUBLE QUOTE NESTING)
+        // ================================================================
+        function imgHtml(src, alt, fallbackIcon = '📄') {
+            return `<img src="${src}" alt="${alt}" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML = \`
+                           <div class='img-fallback'>
+                             ${fallbackIcon}
+                             <small>${alt}<br>${src}</small>
+                           </div>\`;" 
+                         onload="this.style.display='block';" 
+                         style="display:block; width:100%; height:100%; object-fit:cover;" />`;
+        }
+
+        function imgHtmlModal(src, alt, fallbackIcon = '📄') {
+            return `<img src="${src}" alt="${alt}" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML = \`
+                           <div class='img-fallback'>
+                             ${fallbackIcon}
+                             <small>${alt}<br>${src}</small>
+                           </div>\`;" 
+                         onload="this.style.display='block';" 
+                         style="display:block; max-width:100%; max-height:60vh; object-fit:contain; border-radius:8px;" />`;
+        }
+
+        // ================================================================
+        //  RENDER DOCUMENTS
+        // ================================================================
+        function renderDocuments(docsToRender) {
+            const grid = document.getElementById('docGrid');
+            grid.innerHTML = '';
+
+            docsToRender.forEach(doc => {
+                const card = document.createElement('div');
+                card.className = 'doc-card';
+                card.setAttribute('data-id', doc.id);
+                card.setAttribute('data-category', doc.category);
+                card.setAttribute('data-type', doc.type);
+
+                if (doc.type === 'flip') {
+                    // ---- FLIP CARD ----
+                    const isFlipped = flipState[doc.id] || false;
+                    card.innerHTML = `
+                    <span class="card-badge ${doc.badgeClass}">${doc.badgeText}</span>
+                    <div class="flip-card-container" id="flipContainer-${doc.id}">
+                      <div class="flip-card-inner ${isFlipped ? 'flipped' : ''}" id="flipInner-${doc.id}">
+                        <div class="flip-card-front" style="background:#0a0a18;">
+                          ${imgHtml(doc.frontImage, doc.name + ' Front', doc.icon)}
+                          <div class="flip-indicator">
+                            <span class="dot ${!isFlipped ? 'active' : ''}" id="dotFront-${doc.id}"></span>
+                            <span class="dot ${isFlipped ? 'active' : ''}" id="dotBack-${doc.id}"></span>
+                          </div>
+                        </div>
+                        <div class="flip-card-back" style="background:#0a0a18;">
+                          ${imgHtml(doc.backImage, doc.name + ' Back', '🔄')}
+                          <div class="flip-indicator">
+                            <span class="dot ${!isFlipped ? 'active' : ''}" id="dotFront2-${doc.id}"></span>
+                            <span class="dot ${isFlipped ? 'active' : ''}" id="dotBack2-${doc.id}"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-info">
+                      <h3>${doc.name}</h3>
+                      <p class="card-category">${doc.subName}</p>
+                    </div>
+                  `;
+
+                    const flipContainer = card.querySelector('.flip-card-container');
+                    let clickTimer = null;
+                    flipContainer.addEventListener('click', function(e) {
+                        if (clickTimer === null) {
+                            clickTimer = setTimeout(() => {
+                                clickTimer = null;
+                                openModal(doc);
+                            }, 280);
+                        }
+                    });
+                    flipContainer.addEventListener('dblclick', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (clickTimer !== null) {
+                            clearTimeout(clickTimer);
+                            clickTimer = null;
+                        }
+                        toggleFlip(doc.id);
+                    });
+
+                } else {
+                    // ---- REGULAR CARD ----
+                    card.innerHTML = `
+                    <span class="card-badge ${doc.badgeClass}">${doc.badgeText}</span>
+                    <div class="card-preview" style="background:#0a0a18;">
+                      ${imgHtml(doc.frontImage, doc.name, doc.icon)}
+                    </div>
+                    <div class="card-info">
+                      <h3>${doc.name}</h3>
+                      <p class="card-category">${doc.subName}</p>
+                    </div>
+                  `;
+
+                    card.addEventListener('click', function() {
+                        openModal(doc);
+                    });
+                }
+
+                grid.appendChild(card);
+            });
+
+            // Update stats
+            const total = docsToRender.length;
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statCert').textContent = docsToRender.filter(d => d.category === 'certificate').length;
+            document.getElementById('statDmc').textContent = docsToRender.filter(d => d.category === 'dmc').length;
+            document.getElementById('statIdentity').textContent = docsToRender.filter(d => d.category === 'identity')
+            .length;
+        }
+
+        // ================================================================
+        //  FLIP LOGIC
+        // ================================================================
+        function toggleFlip(docId) {
+            const inner = document.getElementById('flipInner-' + docId);
+            if (!inner) return;
+            flipState[docId] = !flipState[docId];
+            inner.classList.toggle('flipped', flipState[docId]);
+
+            // Update dots
+            const dots = document.querySelectorAll(`#dotFront-${docId}, #dotBack-${docId}, #dotFront2-${docId}, #dotBack2-${docId}`);
+            dots.forEach(d => d.classList.remove('active'));
+            if (flipState[docId]) {
+                document.getElementById('dotBack-' + docId)?.classList.add('active');
+                document.getElementById('dotBack2-' + docId)?.classList.add('active');
+            } else {
+                document.getElementById('dotFront-' + docId)?.classList.add('active');
+                document.getElementById('dotFront2-' + docId)?.classList.add('active');
+            }
+
+            // Glow feedback
+            const card = document.querySelector(`.doc-card[data-id="${docId}"]`);
+            if (card) {
+                card.style.boxShadow = '0 0 35px rgba(180, 0, 255, 0.5)';
+                setTimeout(() => { card.style.boxShadow = ''; }, 400);
+            }
+        }
+
+        // ================================================================
+        //  MODAL
+        // ================================================================
+        function openModal(doc) {
+            currentModalDoc = doc;
+            modalShowingBack = false;
+            const overlay = document.getElementById('modalOverlay');
+            const area = document.getElementById('modalImageArea');
+            const flipBtn = document.getElementById('modalFlipBtn');
+
+            const src = doc.type === 'flip' ? doc.frontImage : doc.frontImage;
+            area.innerHTML = imgHtmlModal(src, doc.name, doc.icon);
+
+            if (doc.type === 'flip') {
+                flipBtn.classList.add('visible');
+                flipBtn.textContent = '🔄 FLIP TO BACK';
+            } else {
+                flipBtn.classList.remove('visible');
+            }
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            currentModalDoc = null;
+            modalShowingBack = false;
+            document.body.style.overflow = '';
+        }
+
+        function flipInModal() {
+            if (!currentModalDoc || currentModalDoc.type !== 'flip') return;
+            modalShowingBack = !modalShowingBack;
+            const area = document.getElementById('modalImageArea');
+            const flipBtn = document.getElementById('modalFlipBtn');
+            const src = modalShowingBack ? currentModalDoc.backImage : currentModalDoc.frontImage;
+            const label = modalShowingBack ? 'Back' : 'Front';
+
+            area.innerHTML = imgHtmlModal(src, currentModalDoc.name + ' ' + label, currentModalDoc.icon);
+            flipBtn.textContent = modalShowingBack ? '🔄 FLIP TO FRONT' : '🔄 FLIP TO BACK';
+
+            // Glow
+            const content = document.getElementById('modalContent');
+            content.style.boxShadow = '0 20px 60px rgba(0,0,0,0.7), 0 0 60px rgba(180, 0, 255, 0.3)';
+            setTimeout(() => {
+                content.style.boxShadow = '0 20px 60px rgba(0,0,0,0.7), 0 0 80px rgba(0, 240, 255, 0.08)';
+            }, 400);
+        }
+
+        // Close on overlay click
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ================================================================
+        //  SEARCH / FILTER
+        // ================================================================
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const active = document.querySelector('.sidebar-nav a.active');
+            const cat = active ? active.getAttribute('data-filter') : 'all';
+            let filtered = documents;
+            if (cat && cat !== 'all') filtered = filtered.filter(d => d.category === cat);
+            if (query) filtered = filtered.filter(d =>
+                d.name.toLowerCase().includes(query) ||
+                d.subName.toLowerCase().includes(query) ||
+                d.category.toLowerCase().includes(query)
+            );
+            renderDocuments(filtered);
+        }
+
+        function filterDocs(category, el) {
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            if (el) el.classList.add('active');
+            document.getElementById('searchInput').value = '';
+            let filtered = documents;
+            if (category && category !== 'all') filtered = documents.filter(d => d.category === category);
+            renderDocuments(filtered);
+        }
+
+        // ================================================================
+        //  INIT
+        // ================================================================
+        renderDocuments(documents);
+
+        console.log('%c🔐 DOCUMENT VAULT ACTIVE', 'color:#00f0ff;font-size:18px;');
+        console.log('%c📁 Images folder: ./images/', 'color:#ffaa00;');
+        console.log('%c🔄 Double-click flip cards to flip them!', 'color:#ff0088;');
+    </script>
+</body>
+</html>
